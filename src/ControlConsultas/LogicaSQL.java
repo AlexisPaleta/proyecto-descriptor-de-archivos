@@ -7,6 +7,8 @@ package ControlConsultas;
 import EstructurasDeDatosTemporales.DescriptorArchivos;
 import EstructurasDeDatosTemporales.MostarEnTabla;
 import EstructurasDeDatosTemporales.ParametrosConsulta;
+import EstructurasDeDatosTemporales.PasosTablasContenido;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -668,6 +670,7 @@ public class LogicaSQL {
 
 
         }
+
         
         
         
@@ -730,6 +733,36 @@ public class LogicaSQL {
         return tabla;
   
     }
+
+    public PasosTablasContenido recuperarTablaOriginal(){//este metodo va a servir para recuperar la tabla original
+        ParametrosConsulta recibe = diccionarioDeDatos();//se verifica la sintaxis de todo, solo que ahora
+        //ya no se va a hacer como en la parte de la consulta de solo mostrar los datos que se solicitan
+        //sino que ahora se muestra todo, pero aun asi se ocupa lo del diccionario de datos porque no quiero que
+        //funcione hasta que la consulta no se haya escrito correctamente
+
+        if(recibe == null){
+            System.out.println("ERROR: LA CONSULTA NO SE PUEDE EJECUTAR, parte de la original");
+            return null;
+        }
+        try{
+
+            Vector<Vector> grande = recibe.getGrande();
+            descriptor = new DescriptorArchivos(nombreTabla);
+            String[] atributos = descriptor.vaciarContenido();
+            
+
+            PasosTablasContenido retorno = new PasosTablasContenido(grande,atributos,nombreTabla);
+
+            return retorno;
+
+        }catch(Exception e){
+            System.out.println("ERROR: NO SE PUDO RECUPERAR LA TABLA ORIGINAL");
+            return null;
+        }
+        
+
+    }
+
     
     public static void main(String args[]){
         

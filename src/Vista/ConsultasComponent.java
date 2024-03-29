@@ -8,14 +8,23 @@ import javax.swing.JOptionPane;
 
 import ControlConsultas.LogicaSQL;
 import EstructurasDeDatosTemporales.MostarEnTabla;
+import EstructurasDeDatosTemporales.PasosTablasContenido;
+import pasosconsulta.pasosComponent;
+import pasosconsulta.versionesTablas.tablaOriginal.TOriginalComponent;
 
 public class ConsultasComponent implements ActionListener{//en esta clase se maneja la logica cuando se realizan
     //las acciones de los botones, o sea las consultas que pueda ingresar el usuario
 
     private ConsultasTemplate consultasTemplate;
+    private pasosComponent pasosCompon;
+    private TOriginalComponent tOriginalComponent;
 
     public ConsultasComponent(){
         this.consultasTemplate = new ConsultasTemplate(this);
+        this.pasosCompon = new pasosComponent(this);
+
+
+        consultasTemplate.getpOpciones().add(pasosCompon.getpasosTemplate());
     }
 
     @Override
@@ -30,10 +39,6 @@ public class ConsultasComponent implements ActionListener{//en esta clase se man
             limpiar();
         
     }
-        if(e.getSource() == consultasTemplate.getBSiguiente()){
-            System.out.println("Siguiente");
-        
-    }
     }
 
     public void limpiar(){
@@ -43,6 +48,22 @@ public class ConsultasComponent implements ActionListener{//en esta clase se man
         consultasTemplate.getTAreaConsulta().setText("");
         consultasTemplate.getMt().setRowCount(0);
         
+    }
+
+    public void mostrarTablas(String tipoTabla){//este metodo va a ser invocado en pasosComponent pues ahi
+        //se encuentran los metodos de los botones para cambiar entre las tablas a mostrar
+        consultasTemplate.getpDebajo().removeAll();
+        switch(tipoTabla){
+            case "TOriginal"://en caso de que se presione el boton de Tabla original se mostrara la tabla original
+                if(tOriginalComponent == null){
+                    tOriginalComponent = new TOriginalComponent(this);
+                }
+                tOriginalComponent.mostrarTOriginal();
+                consultasTemplate.getpDebajo().add(tOriginalComponent.getTOriginalTemplate());
+            break;
+        }
+
+        consultasTemplate.repaint();
     }
 
     public void ejecutar(){
@@ -84,6 +105,31 @@ public class ConsultasComponent implements ActionListener{//en esta clase se man
 
         
 
+    }
+
+    public MostarEnTabla ejecutarConsulta(){//este metodo lo van a usar las clases que realizan las tablas
+
+        var sLogicaSQL = new LogicaSQL(consultasTemplate.getTAreaConsulta().getText(),"tabla");
+        MostarEnTabla datosTabla = sLogicaSQL.ejecutarConsulta();//se manda a llamar a la clase que
+        
+        if(datosTabla == null){//en caso de que la clase LogicaSQL retorne nulo significa que hubo error a la hora 
+            //de tratar de realizar la consulta
+            JOptionPane.showMessageDialog(null, "Error al procesar la consulta");
+            return null;
+        }
+
+        return datosTabla;
+    }
+
+    public PasosTablasContenido toriginal(){//este metodo lo va a usar la clase TOriginalComponent
+        var sLogicaSQL = new LogicaSQL(consultasTemplate.getTAreaConsulta().getText(),"tabla");
+
+        return sLogicaSQL.recuperarTablaOriginal();
+
+    }
+
+    public String getConsulta(){//este metodo lo van a usar las clases que realizan las tablas
+        return consultasTemplate.getTAreaConsulta().getText();
     }
 
     public ConsultasTemplate getConsultasTemplate(){

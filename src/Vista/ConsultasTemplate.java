@@ -3,13 +3,11 @@ package Vista;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-import ControlConsultas.LogicaSQL;
 import Services.ObjGraficosService;
 import Services.RecursosService;
 
@@ -21,16 +19,15 @@ public class ConsultasTemplate extends JFrame{
 
     private ObjGraficosService sObjGraficos;
     private RecursosService sRecursos;
-    private LogicaSQL sLogicaSQL;
 
-    private JPanel pDebajo, pIzquierda,pDerecha;
-    private JLabel lTituloVentana,lTablaFinal,lTablaProceso,lAcciones,lFondo;
+    private JPanel pDebajo, pIzquierda,pDerecha,pOpciones;
+    private JLabel lTituloVentana,lAcciones;
     private JTextArea tAreaConsulta;
-    private JButton bEjecutar,bLimpiar,bSiguiente;
+    private JButton bEjecutar,bLimpiar;
 
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable Tabla;
-    DefaultTableModel mt = new DefaultTableModel();
+    private DefaultTableModel mt = new DefaultTableModel();
 
     private ConsultasComponent consultasComponent;
     
@@ -56,6 +53,8 @@ public class ConsultasTemplate extends JFrame{
         setSize(1000,500);
         setLocationRelativeTo(this);
         setVisible(true);
+
+        
 
         String id [] = {"Tabla de consultas"};
 
@@ -88,8 +87,9 @@ public class ConsultasTemplate extends JFrame{
         
         
         jScrollPane1.setViewportView(Tabla);
-        jScrollPane1.setBounds(0, 200, 1000, 300);
-        this.add(jScrollPane1);
+        jScrollPane1.setBounds(0, 0, 1000, 300);
+        pDebajo.add(jScrollPane1);
+        
 
         //tabla = new JTable(mt);
         Tabla.setBounds(0, 200, 1000, 300);
@@ -98,14 +98,17 @@ public class ConsultasTemplate extends JFrame{
     }
 
     private void crearJpanels(){
-        //pDebajo = sObjGraficos.construirJPanel(0, 200, 1000, 300, sRecursos.getColorFondo(), null);
-        //this.add(pDebajo);
+        pDebajo = sObjGraficos.construirJPanel(0, 200, 1000, 300, null, null);
+        this.add(pDebajo);
 
         pIzquierda = sObjGraficos.construirJPanel(0, 0, 700, 200, sRecursos.getColorFondo(), null);
         this.add(pIzquierda);
 
-        pDerecha = sObjGraficos.construirJPanel(700, 0, 300, 200, sRecursos.getColorFondo(), null);
+        pDerecha = sObjGraficos.construirJPanel(700, 0, 300, 130, Color.red, null);
         this.add(pDerecha);
+
+        pOpciones = sObjGraficos.construirJPanel(700, 130, 300, 70, null, null);
+        this.add(pOpciones);
     }
 
     private void crearJlabels(){
@@ -138,11 +141,6 @@ public class ConsultasTemplate extends JFrame{
         bLimpiar.addActionListener(consultasComponent);
         pDerecha.add(bLimpiar);
 
-        bSiguiente = sObjGraficos.construirJButton("Siguiente", 85, 120, 100, 30, sRecursos.getColorBoton(), Color.white, sRecursos.getFontBotones(), sRecursos.getcMano(), sRecursos.getBordeBoton(), false);
-        bSiguiente.addActionListener(consultasComponent);
-        pDerecha.add(bSiguiente);
-
-        
 
     }
 
@@ -159,6 +157,10 @@ public class ConsultasTemplate extends JFrame{
         return pDerecha;
     }
 
+    public JPanel getpOpciones() {
+        return pOpciones;
+    }
+
     public JButton getBEjecutar() {
         return bEjecutar;
     }
@@ -167,9 +169,6 @@ public class ConsultasTemplate extends JFrame{
         return bLimpiar;
     }
 
-    public JButton getBSiguiente() {
-        return bSiguiente;
-    }
 
     public JTextArea getTAreaConsulta() {
         return tAreaConsulta;
