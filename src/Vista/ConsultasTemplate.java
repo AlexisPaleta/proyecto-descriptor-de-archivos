@@ -10,18 +10,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 import ControlConsultas.LogicaSQL;
-import EstructurasDeDatosTemporales.MostarEnTabla;
 import Services.ObjGraficosService;
 import Services.RecursosService;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.util.Vector;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 
-public class Consultas extends JFrame{
+
+public class ConsultasTemplate extends JFrame{
 
     private ObjGraficosService sObjGraficos;
     private RecursosService sRecursos;
@@ -35,11 +31,14 @@ public class Consultas extends JFrame{
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable Tabla;
     DefaultTableModel mt = new DefaultTableModel();
+
+    private ConsultasComponent consultasComponent;
     
 
-    public Consultas() {
+    public ConsultasTemplate(ConsultasComponent consultasComponent) {
         super("Generador de consultas");
         
+        this.consultasComponent = consultasComponent;
         sObjGraficos = ObjGraficosService.getService();
         sRecursos = RecursosService.getService();
         
@@ -67,7 +66,10 @@ public class Consultas extends JFrame{
 
     }
 
-    private void crearJTable(){
+    public void crearJTable(){
+
+        jScrollPane1 = null;
+        Tabla = null;
 
         jScrollPane1 = new javax.swing.JScrollPane();
         Tabla = new javax.swing.JTable();
@@ -128,62 +130,68 @@ public class Consultas extends JFrame{
         
 
         bEjecutar = sObjGraficos.construirJButton("Ejecutar", 85, 40, 100, 30, sRecursos.getColorBoton(), Color.white, sRecursos.getFontBotones(), sRecursos.getcMano(), sRecursos.getBordeBoton(), false);
+        
+        bEjecutar.addActionListener(consultasComponent);
         pDerecha.add(bEjecutar);
 
         bLimpiar = sObjGraficos.construirJButton("Limpiar", 85, 80, 100, 30, sRecursos.getColorBoton(), Color.white, sRecursos.getFontBotones(), sRecursos.getcMano(), sRecursos.getBordeBoton(), false);
+        bLimpiar.addActionListener(consultasComponent);
         pDerecha.add(bLimpiar);
 
         bSiguiente = sObjGraficos.construirJButton("Siguiente", 85, 120, 100, 30, sRecursos.getColorBoton(), Color.white, sRecursos.getFontBotones(), sRecursos.getcMano(), sRecursos.getBordeBoton(), false);
+        bSiguiente.addActionListener(consultasComponent);
         pDerecha.add(bSiguiente);
 
-
-        
-        bEjecutar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                bEjecutaractionPerformed(e);
-            }
-        });
         
 
     }
 
-    private void bEjecutaractionPerformed(ActionEvent e){ 
 
-        try{
+    public JPanel getpDebajo() {
+        return pDebajo;
+    }
 
-            crearJTable();
+    public JPanel getpIzquierda() {
+        return pIzquierda;
+    }
 
-            sLogicaSQL = new LogicaSQL(tAreaConsulta.getText(),"tabla");
-            sLogicaSQL.ejecutarConsulta();
+    public JPanel getpDerecha() {
+        return pDerecha;
+    }
 
-            
+    public JButton getBEjecutar() {
+        return bEjecutar;
+    }
 
-            MostarEnTabla datosTabla = sLogicaSQL.ejecutarConsulta();
+    public JButton getBLimpiar() {
+        return bLimpiar;
+    }
 
-            if(datosTabla == null){
-                JOptionPane.showMessageDialog(null, "Error al procesar la consulta");
-            }
-            Vector<Vector> datos = datosTabla.getDatos();
-            String[] columnas = datosTabla.getColumnas();
-            
-            mt.setColumnIdentifiers(columnas);
+    public JButton getBSiguiente() {
+        return bSiguiente;
+    }
 
-            for(int i = 0; i < datos.size(); i++){
-                mt.addRow(datos.get(i));
-            }
-            Tabla.setModel(mt);
-        }catch(Exception ex){
-            System.out.println("Error en la consulta");
-        }
-        
+    public JTextArea getTAreaConsulta() {
+        return tAreaConsulta;
+    }
 
+    public javax.swing.JScrollPane getjScrollPane1() {
+        return jScrollPane1;
+    }
+
+    public javax.swing.JTable getTabla() {
+        return Tabla;
+    }
+
+    public DefaultTableModel getMt() {
+        return mt;
     }
 
 
     public static void main(String[] args) {
         Runnable runApplication = new Runnable() {
             public void run() {
-                Consultas consulta = new Consultas();
+                ConsultasComponent consulta = new ConsultasComponent();
                 consulta.getClass();
             }
         };
