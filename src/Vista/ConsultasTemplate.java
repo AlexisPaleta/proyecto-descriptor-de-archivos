@@ -23,11 +23,10 @@ public class ConsultasTemplate extends JFrame{
     private JPanel pDebajo, pIzquierda,pDerecha,pOpciones;
     private JLabel lTituloVentana,lAcciones;
     private JTextArea tAreaConsulta;
-    private JButton bEjecutar,bLimpiar;
 
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable Tabla;
-    private DefaultTableModel mt = new DefaultTableModel();
+    private DefaultTableModel mt ;
 
     private ConsultasComponent consultasComponent;
     
@@ -38,6 +37,8 @@ public class ConsultasTemplate extends JFrame{
         this.consultasComponent = consultasComponent;
         sObjGraficos = ObjGraficosService.getService();
         sRecursos = RecursosService.getService();
+
+        mt = new DefaultTableModel();
         
 
         this.crearJpanels();
@@ -45,8 +46,6 @@ public class ConsultasTemplate extends JFrame{
         this.crearJlabels();
 
         this.crearJtextAreas();
-
-        this.crearJbuttons();
         
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -54,46 +53,29 @@ public class ConsultasTemplate extends JFrame{
         setLocationRelativeTo(this);
         setVisible(true);
 
-        
-
-        String id [] = {"Tabla de consultas"};
-
         this.crearJTable();
-
-        mt.setColumnIdentifiers(id);
-        Tabla.setModel(mt);
 
     }
 
     public void crearJTable(){
 
-        jScrollPane1 = null;
-        Tabla = null;
 
         jScrollPane1 = new javax.swing.JScrollPane();
         Tabla = new javax.swing.JTable();
 
         Tabla.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null}
             },
             new String [] {
                 "Tabla de consultas"
             }
         ));
-        
-        
         jScrollPane1.setViewportView(Tabla);
         jScrollPane1.setBounds(0, 0, 1000, 300);
         pDebajo.add(jScrollPane1);
         
 
         //tabla = new JTable(mt);
-        Tabla.setBounds(0, 200, 1000, 300);
-        
         
     }
 
@@ -104,11 +86,11 @@ public class ConsultasTemplate extends JFrame{
         pIzquierda = sObjGraficos.construirJPanel(0, 0, 700, 200, sRecursos.getColorFondo(), null);
         this.add(pIzquierda);
 
-        pDerecha = sObjGraficos.construirJPanel(700, 0, 300, 130, Color.red, null);
+        pDerecha = sObjGraficos.construirJPanel(700, 0, 300, 200, Color.red, null);
         this.add(pDerecha);
 
-        pOpciones = sObjGraficos.construirJPanel(700, 130, 300, 70, null, null);
-        this.add(pOpciones);
+        //pOpciones = sObjGraficos.construirJPanel(700, 130, 300, 70, null, null);
+        //this.add(pOpciones);
     }
 
     private void crearJlabels(){
@@ -118,29 +100,14 @@ public class ConsultasTemplate extends JFrame{
         //lTablaProceso = sObjGraficos.construirJLabel("Tabla de proceso", 25, 10, 200, 30, Color.white, Color.white, sRecursos.getFontTitulo());
         //pDebajo.add(lTablaProceso);
 
-        lAcciones = sObjGraficos.construirJLabel("Acciones", 110, 10, 200, 30, Color.white, Color.white, sRecursos.getFontTitulo());
-        pDerecha.add(lAcciones);
+        //lAcciones = sObjGraficos.construirJLabel("Acciones", 110, 10, 200, 30, Color.white, Color.white, sRecursos.getFontTitulo());
+        //pDerecha.add(lAcciones);
 
     }
 
     private void crearJtextAreas(){
         tAreaConsulta = sObjGraficos.construirJTextArea("SELECT  employee_id, first_name,salary  ,manager_id FROM tabla WHERE salary between 2500 AND 15000;", 25, 40, 650, 145, Color.white, Color.black, sRecursos.getFontArial(), true);
         pIzquierda.add(tAreaConsulta);
-
-    }
-
-    private void crearJbuttons(){
-        
-
-        bEjecutar = sObjGraficos.construirJButton("Ejecutar", 85, 40, 100, 30, sRecursos.getColorBoton(), Color.white, sRecursos.getFontBotones(), sRecursos.getcMano(), sRecursos.getBordeBoton(), false);
-        
-        bEjecutar.addActionListener(consultasComponent);
-        pDerecha.add(bEjecutar);
-
-        bLimpiar = sObjGraficos.construirJButton("Limpiar", 85, 80, 100, 30, sRecursos.getColorBoton(), Color.white, sRecursos.getFontBotones(), sRecursos.getcMano(), sRecursos.getBordeBoton(), false);
-        bLimpiar.addActionListener(consultasComponent);
-        pDerecha.add(bLimpiar);
-
 
     }
 
@@ -159,14 +126,6 @@ public class ConsultasTemplate extends JFrame{
 
     public JPanel getpOpciones() {
         return pOpciones;
-    }
-
-    public JButton getBEjecutar() {
-        return bEjecutar;
-    }
-
-    public JButton getBLimpiar() {
-        return bLimpiar;
     }
 
 

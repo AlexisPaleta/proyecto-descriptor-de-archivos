@@ -1,24 +1,28 @@
-package pasosconsulta.versionesTablas.tablaOriginal;
+package pasosconsulta.versionesTablas.tablaProyectada.tablaOriginal;
 
-
+import java.io.IOException;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-
-import EstructurasDeDatosTemporales.MostarEnTabla;
+import EstructurasDeDatosTemporales.DescriptorArchivos;
+import EstructurasDeDatosTemporales.MostarEnTabla; 
+import EstructurasDeDatosTemporales.PasosTablasContenido;
 import Vista.ConsultasComponent;
+import Vista.VentanaTabla;
 
-public class TOriginalComponent {
+public class TProyectadaComponent {
 
-    private TOriginalTemplate tOriginalTemplate;
+    private TProyectadaTemplate tProyectadaTemplate;
     private ConsultasComponent consultasComponent;
 
-    public TOriginalComponent(ConsultasComponent consultasComponent) {
-        this.tOriginalTemplate = new TOriginalTemplate(this);
+    public TProyectadaComponent(ConsultasComponent consultasComponent) {
+        this.tProyectadaTemplate = new TProyectadaTemplate(this);
         this.consultasComponent = consultasComponent;
     }
 
     private void reiniciarTabla(){
-        tOriginalTemplate.getTabla().setModel(new javax.swing.table.DefaultTableModel(
+        tProyectadaTemplate.getTabla().setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
             },
             new String [] {
@@ -26,15 +30,19 @@ public class TOriginalComponent {
             }
         ));
 
-        tOriginalTemplate.getMt().setRowCount(0);//se reinicia el modelo de la tabla
+        tProyectadaTemplate.getMt().setRowCount(0);//se reinicia el modelo de la tabla
     }
 
-    public void mostrarTOriginal(){
 
+    public void mostrarTProyectada(){
         
         try {
-            MostarEnTabla datosTabla = consultasComponent.tOriginal();
+
+            //tProyectadaTemplate.getMt().setRowCount(0);//se reinicia el modelo de la tabla
+            //se manda a llamar a la clase logicaSQL para que ejecute la consulta que el usuario ingreso en 
+            //el textArea
             reiniciarTabla();//se reinicia el modelo de la tabla
+            MostarEnTabla datosTabla = consultasComponent.tProyectada();
             
 
             if(datosTabla == null){
@@ -53,12 +61,12 @@ public class TOriginalComponent {
             
             
 
-            tOriginalTemplate.getMt().setColumnIdentifiers(columnas);
+            tProyectadaTemplate.getMt().setColumnIdentifiers(columnas);
 
             for(int i = 0; i < datos.size(); i++){
-                tOriginalTemplate.getMt().addRow(datos.get(i));
+                tProyectadaTemplate.getMt().addRow(datos.get(i));
             }
-            tOriginalTemplate.getTabla().setModel(tOriginalTemplate.getMt());
+            tProyectadaTemplate.getTabla().setModel(tProyectadaTemplate.getMt());
             
             //descriptor.contenido(); el metodo retorna un vector de String, que contiene la informacion de las lineas leidas
         } catch (Exception ex) {
@@ -67,8 +75,8 @@ public class TOriginalComponent {
         
     }
 
-    public TOriginalTemplate getTOriginalTemplate(){
-        return tOriginalTemplate;
+    public TProyectadaTemplate getTProyectadaTemplate(){
+        return tProyectadaTemplate;
     }
 
 }

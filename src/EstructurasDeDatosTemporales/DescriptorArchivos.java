@@ -5,10 +5,8 @@
 package EstructurasDeDatosTemporales;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 
 /**
@@ -20,6 +18,7 @@ public class DescriptorArchivos {
     private String NombreTabla;
     private String nombreArchivo;
     private AtributoTabla[] atributosTabla;
+    private int cantidadAtributos;
     
 
     
@@ -27,6 +26,7 @@ public class DescriptorArchivos {
         this.NombreTabla = "";
         this.nombreArchivo = nombreArchivo;
         this.atributosTabla = null;
+        this.cantidadAtributos = 0;
         
     }
     
@@ -39,7 +39,7 @@ public class DescriptorArchivos {
     }
     
     private String[] atributos(){
-        String[] atributos = new String[11];//el valor debe ser modificado a la cantidad de atributos que se hayan leido
+        String[] atributos = new String[cantidadAtributos];//el valor debe ser modificado a la cantidad de atributos que se hayan leido
         int contador = 0;
         for(AtributoTabla atributo : atributosTabla){
             atributos[contador]=atributo.getNombreAtributo();
@@ -186,16 +186,16 @@ public class DescriptorArchivos {
         
         this.setNombreTabla(lu[0]); 
         
-        int control = (lu.length-1)/3;//esto me da el total de atributos que se tienen en la tabla del archivo .txt
+        cantidadAtributos = (lu.length-1)/3;//esto me da el total de atributos que se tienen en la tabla del archivo .txt
         //si por ejemplo tengo que mi arreglo lu[] tiene una longitud de 10, este 10 considera al nombre de la tabla,
         //por eso tengo que restarle uno, entonces tengo 9, y se divide entre 9 porque quiero ver los 3 valores
         //para guardar de cada atributo, si fuesen mas entonces se dividiria entre el numero de valores que quiero
         //rescatar por atributo
         
-        AtributoTabla[] atributosArreglo = new AtributoTabla[control];//defino un arreglo de AtributoTabla en base a la cantidad de atributos totales
+        AtributoTabla[] atributosArreglo = new AtributoTabla[cantidadAtributos];//defino un arreglo de AtributoTabla en base a la cantidad de atributos totales
         //en la tabla que se esta leyendo
         int indice = 0;
-        for(int contador = 1;contador<=control;contador++){//el contador inicia desde 1 porque en la posicion cero de 
+        for(int contador = 1;contador<=cantidadAtributos;contador++){//el contador inicia desde 1 porque en la posicion cero de 
             //la primera de la linea del archivo se encuentra el nombre de la tabla, entonces los atributos se encuentran
             //a partir de la posicion[1] en las dos siguientes estan sus limites y luego sigue el sig atributo y asi
             //sucesivamente

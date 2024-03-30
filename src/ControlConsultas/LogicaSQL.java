@@ -10,7 +10,6 @@ import EstructurasDeDatosTemporales.ParametrosConsulta;
 import EstructurasDeDatosTemporales.PasosTablasContenido;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -21,192 +20,50 @@ import java.util.Vector;
 public class LogicaSQL {
     
     private String consulta;
-    private String nombreTabla;
-    private String[] ClausulasSQL = {"SELECT","FROM","WHERE"};
-    private HashMap<String,Integer> comandosSQL = new HashMap<>();
-    private DescriptorArchivos descriptor;
 
-    
-    public LogicaSQL(String consulta,String nombreTabla){
+    private String[] ClausulasSQL = {"SELECT","FROM","WHERE"};
+
+    public LogicaSQL(String consulta){
         this.consulta = consulta;
-        this.nombreTabla = nombreTabla;
-        this.comandosSQL.put("SELECT", 1);
-        this.comandosSQL.put("FROM", 2);
-        this.comandosSQL.put("WHERE", 3);
     }
     
     public String getConsulta() {
         return consulta;
     }
-    
-    private ParametrosConsulta diccionarioDeDatos(){//se va a verificar los datos de la consulta se encuentre en el archivo a leer
-        
-        HashMap<String,Object[]> parametrosConsulta = ControlSintaxisConsulta.comprobarSintaxis(consulta,ClausulasSQL);//recibo el HashMap que contiene los 
-        //parametros asignados a cada comando SQL
-        if(parametrosConsulta == null){//en caso de ser nulo la sintaxis de la consulta no era correcta entonces
+
+    private HashMap<String,Object[]> obtenerParametrosPorComando(){
+
+        HashMap<String,Object[]> parametrosPorComando = ControlSintaxisConsulta.comprobarSintaxis(consulta,ClausulasSQL);//recibo el HashMap que contiene los 
+        //parametros asignados a cada comando SQL// se manda a llamar a la clase que contiene todo el control de sintaxis
+        if(parametrosPorComando == null){//en caso de ser nulo la sintaxis de la consulta no era correcta entonces
             //arrojo un error
             System.out.println("ERROR LA CONSULTA NO SE PUEDE EJECUTAR");
             return null;
         }
-        
-        Object[] llavesParametros = parametrosConsulta.keySet().toArray();//recupero los comandos que ejecuto el usuario
-        Object[] nombreT = parametrosConsulta.get("FROM");//voy a recuperar el nombre del archivo que vaya a leer
-        //debo hacerlo con tipo Object porque es como estan guardados los parametros de cada comando, en este caso como
-        //quiero saber el nombre del archivo especifico que se desea abrir por eso se accede al HashMap con la llave
-        //"FROM" recordando que si se llega a la ejecucion de esta parte es porque ya se comprobo que la sintaxis de la
-        //consulta es correcta
-        this.nombreTabla = nombreT[0].toString().toLowerCase() + ".txt";//leo el nombre , lo convierto a una cadena,
-        //lo hago minusculas y le agrego la terminacion.txt
-        System.out.println("NOMBRE :" + nombreTabla);
-        String[] atributos;
-        HashMap<String,Integer> posicionesAtributos = new HashMap<>();
-        Vector<Vector> grande = new Vector<>(); //defino un vector de vectores
-        try {
-            descriptor = new DescriptorArchivos(nombreTabla);
-             atributos = descriptor.vaciarContenido();//se manda a llamar al metodo que va a leer el archivo especificado, y luego
-            //se recibe de ese mismo metodo un arreglo de Strings, que contiene los nombres de los atributos de la tabla para que se puedan poner
-            //en las columnas de la tabla
-            if (atributos == null){
-                   System.out.println("ERROR");
-                return null;
-            }
-//            System.out.println("Atributos de la tabla:");
-//            for(String at:atributos){
-//                System.out.println(at);
-//            }
-            int contador = 0;
-            for(String at:atributos){//voy a asignarle a cada atributo su posicion en el Vector llamado "grande"
-                posicionesAtributos.put(at,contador );
-                contador++;
-            }
+        return parametrosPorComando;
 
-            
-            grande = descriptor.contenido(); //voy a guardar dentro de grande el vector de vectores que se obtiene
-            //de leer los datos del .txt
-            if (grande == null){
-                System.out.println("ERROR");
-                return null;
-            }
-            
-            for(Vector vectorcitos: grande){ //se va a iterar en este ciclo a traves de todos los vectores que esten dentro
-                //del vector "grande", dentro de estos "vectorcitos" se encuentran 3 cadenas (recordando del ejemplo que esta
-                //explicado en la funcion contenido de la clase DescriptorArchivos), es necesario regresarlo asi, porque
-                //el metodo addRow añade las cadenas dentro de un Vector, por eso se tiene que entrar de esta forma
-                //en este caso, el vectorcito contiene 3 cadenas, por lo que el metodo pone la primera cadena
-                //en la primera columna, la segunda en la segunda columna y de esa manera.
-                
-            } 
-           
-        } catch (IOException ex) {
-            System.out.println("ERROR");
-            return null;
-        }
-        
-        //voy a verificar que los atributos que se desean mostrar, que son los parametros que vienen con el SELECT
-        //realmente se encuentren en la tabla solicitada
-        Object[] selectParam = parametrosConsulta.get("SELECT");
-        String[] ordenImpresion = new String[selectParam.length];//voy a guardar los parametros que se desean imprimir
-        //en el orden especificado por la consulta
-        boolean diccionario = false;
-        int control = 0;
-        for(Object parametro:selectParam){//este for es para comprobar que los parametros del SELECT esten en la tabla
-            for(String atributo: atributos){
-                if(parametro.equals(atributo)){//en caso de que el parametro especificado para el comando SELECT se 
-                    //encuentre como atributo de la tabla seleccionada se marca diccionario como true, eso significa que
-                    //si se va a poder mostrar
-//                    System.out.println(parametro +"=="+atributo);
-                    diccionario = true;
-                    ordenImpresion[control] = atributo;
-                    control++;
-                    break;
-                }
-                
-            }
-            if(diccionario == false){//si el parametro no se encuentra en la tabla se muestra un error
-                    
-                    System.out.println("ERROR: El atributo: " + parametro + " no se encuentra en la tabla de " + nombreTabla);
-                    return null;
-                }
-                diccionario = false;// se establece como falso ahora el diccionario porque se va a comparar con el 
-                //siguiente parametro a verificar , en caso de haber
-        }//fin del for que se asegura que los parametros del SELECT esten en la tabla
-        
-        //ahora debo verificar que los parametros de WHERE realmente existan en la tabla, que solo es uno de hecho, esta
-        //comprobacion solo se hace en caso de que se haya ejecutado el comando WHERE, en caso contrario no se realiza
-        
-        if(parametrosConsulta.get("WHERE")!=null){//en caso de que se haya ejecutado el comando WHERE ahora debo
-            //comprobar que su primer parametro se encuentre en la tabla, pues es a quien voy a realizarle las
-            //comparaciones
-            Object[] parametrosWhere = parametrosConsulta.get("WHERE");
-            Object parametroWhere = parametrosWhere[0];//como solo necesito al primer parametro ingresado para el comando
-            //WHERE entonces lo saco de esta forma del arreglo que tiene todos los parametros de ese comando
-            String param = parametroWhere.toString();//convierto a una cadena el primer parametro del comando WHERE para
-            //que lo pueda usar en el comando del HashMap de posicionesAtributos, porque si ingreso el primer parametro
-            //del comando WHERE en este HashMap me debe devolver algun numero entero, pero en caso de que se devuelva
-            //nulo significa que no hay ningun atributo guardado con ese nombre por lo que asi se hace la comprobacion
-            //este metodo se puede usar o tambien el otro de los fors anidados que se usa para la comprobacion en SELECT
-            if(posicionesAtributos.get(param)==null){
-                System.out.println("ERROR: no se encontro al parametro " + param +" en la tabla: " + nombreTabla + " que usa el comando WHERE");
-                return null;
-            }
-            boolean numerico = false;
-            if(parametrosWhere.length == 3){//en caso de que haya solo 3 parametros para el comando WHERE debo verificar
-                //si es que se trata de los casos para ">","<","<=",">=", porque para esos necesito garantizar que se trata
-                //de un numero, en este caso como antes habia hecho la condicion para el BETWEEN AND , y ese ya se encarga
-                //de verificar si es un numero, no voy a colocar de nuevo lo que ya hace esa funcion entonces, con una
-                //bandera voy a indicar que quiero que se revise que el primer parametro de la consulta sea uno que 
-                //pueda manejarse como numerico, se va a poner como true en caso de que el segundo parametro del comando
-                //where en la consulta sea alguno de los simbolos anteriores 
-                String[] condicionesWhere = {">","<","<=",">="};//estas son las posibles condiciones que puede
-                //llegar a tener el where para cuando necesito verificar que el primer parametro sea un numero
-                boolean condicion = false;//se va a verificar que el segundo parametro del comando WHERE sea alguna
-                //de las condiciones anteriores, en caso de serlo significa que es correcto, si nunca coincide
-                //entonces se trata de hacer una operacion no permitida y se regresa un error
-                for(String condiciones:condicionesWhere){
-                    if(parametrosWhere[1].equals(condiciones)){//aqui se va a checar si es que el segundo parametro
-                        //del comando where es alguno de los anteriores
-                        numerico = true;
-                        break;
-                    }
-                }
-                
-            }
-            
-            if(parametrosWhere.length == 5 || numerico){//si es que la cantidad de parametros del where es de cinco significa que
-                //se esta ejecutando un WHERE con las condiciones del "BETWEEN AND" por lo que como esta funcion
-                //solo maneja numeros debo asegurarme de que el parametro con el que voy a realizar las comparaciones
-                //se pueda convertir a un numero sin problema
-                int posicion = posicionesAtributos.get(param);
-                for(Vector fila: grande){
-                    try{
-                        String convertir = fila.get(posicion).toString();//convierto lo que obtenga en la fila que
-                        //esta en la columna del atributo en el que voy a hacer las comparaciones y voy a tratar de ver
-                        //que ocurre cuando trato de convertir a cada uno en un numero, si es que todos se pueden 
-                        //convertir sin problema, entonces el comando WHERE con el BETWEEN se podra ejecutar sin problema
-                        Double.parseDouble(convertir);
-                    }catch(NumberFormatException e){
-                        System.out.println("ERROR: PARA poder ejecutar el where con estas condiciones el parametro a comparar debe ser numerico");
-                    }
-                }
-            }
-        }
-        
-        ParametrosConsulta retorno = new ParametrosConsulta(parametrosConsulta, posicionesAtributos, grande, ordenImpresion);
-        //retorno una objeto con las herramientas necesarias para poder ejecutar la consulta que se solicita
-        return retorno;
-        
     }
     
-    public MostarEnTabla ejecutarConsulta(){//falta agregar lo de comprobar sintaxis
-        ParametrosConsulta recibe = diccionarioDeDatos();
+    
+    public MostarEnTabla ejecutarConsulta(){
+
+        HashMap<String,Object[]> parametrosPorComando = obtenerParametrosPorComando();
+
+        if(parametrosPorComando == null){
+            System.out.println("ERROR: LA CONSULTA NO SE PUEDE EJECUTAR , funcion de ejecutarConsulta");
+            return null;
+        }
+
+        ParametrosConsulta recibe = DiccionarioDeDatos.comprobarDiccionario(parametrosPorComando);
         
         if(recibe == null){
             System.out.println("ERROR: LA CONSULTA NO SE PUEDE EJECUTAR");
             return null;
         }
+        String nombreTabla = recibe.getNombreTabla();//obtengo el nombre de la tabla que se va a consultar
         
-        String[] impresion = new String[recibe.getOrdenImpresion().length];//creo un arreglo de cadenas que va a tener
-        //el tamanio especifico de los parametros que deseo imprimir
+        String[] ordenImpresion = recibe.getOrdenImpresion();//guardo en un arreglo el orden con el que se desea
+        //que se imprima la consulta ingresada por el usuario
         Vector<Vector> datos = new Vector<>();
         Vector<Vector> grande = recibe.getGrande();
         
@@ -231,12 +88,8 @@ public class LogicaSQL {
                 return null;
             }
 
-
         }
 
-        
-        
-        
         int posicion = 0;//defino un entero que me va a ayudar a poder ubicarme en la posicion que necesito del
         //vector llamado grande, este vector contiene a todos los datos de la tabla, al ser un vector de vectores,
         //cada vector dentro del vector grandote es como si fuese una fila, entonces si por ejemplo necesito recuperar
@@ -291,14 +144,22 @@ public class LogicaSQL {
             }
         }
         
-        MostarEnTabla tabla = new MostarEnTabla(datos,recibe.getOrdenImpresion());
+        MostarEnTabla tabla = new MostarEnTabla(datos,ordenImpresion,nombreTabla);
 
         return tabla;
   
     }
 
-    public PasosTablasContenido recuperarTablaOriginal(){//este metodo va a servir para recuperar la tabla original
-        ParametrosConsulta recibe = diccionarioDeDatos();//se verifica la sintaxis de todo, solo que ahora
+    public MostarEnTabla recuperarTablaOriginal(){//este metodo va a servir para recuperar la tabla original
+
+        HashMap<String,Object[]> parametrosPorComando = obtenerParametrosPorComando();
+
+        if(parametrosPorComando == null){
+            System.out.println("ERROR: LA CONSULTA NO SE PUEDE EJECUTAR , funcion de ejecutarConsulta");
+            return null;
+        }
+
+        ParametrosConsulta recibe = DiccionarioDeDatos.comprobarDiccionario(parametrosPorComando);//se verifica la sintaxis de todo, solo que ahora
         //ya no se va a hacer como en la parte de la consulta de solo mostrar los datos que se solicitan
         //sino que ahora se muestra todo, pero aun asi se ocupa lo del diccionario de datos porque no quiero que
         //funcione hasta que la consulta no se haya escrito correctamente
@@ -307,29 +168,70 @@ public class LogicaSQL {
             System.out.println("ERROR: LA CONSULTA NO SE PUEDE EJECUTAR, parte de la original");
             return null;
         }
+
+        String nombreTabla = recibe.getNombreTabla();//obtengo el nombre de la tabla que se va a consultar
         try{
 
             Vector<Vector> grande = recibe.getGrande();
-            descriptor = new DescriptorArchivos(nombreTabla);
-            String[] atributos = descriptor.vaciarContenido();
+            String[] atributos = recibe.getAtributosOriginales();
             
 
-            PasosTablasContenido retorno = new PasosTablasContenido(grande,atributos,nombreTabla);
+            MostarEnTabla tabla = new MostarEnTabla(grande,atributos,nombreTabla);
 
-            return retorno;
+            return tabla;
 
         }catch(Exception e){
             System.out.println("ERROR: NO SE PUDO RECUPERAR LA TABLA ORIGINAL");
             return null;
         }
         
+    }
+
+    public MostarEnTabla tablaProyectada(){
+
+        HashMap<String,Object[]> parametrosPorComando = obtenerParametrosPorComando();
+
+        if(parametrosPorComando == null){
+            System.out.println("ERROR: LA CONSULTA NO SE PUEDE EJECUTAR , funcion de ejecutarConsulta");
+            return null;
+        }
+
+        ParametrosConsulta recibe = DiccionarioDeDatos.comprobarDiccionario(parametrosPorComando);
+        
+        if(recibe == null){
+            System.out.println("ERROR: LA CONSULTA NO SE PUEDE EJECUTAR, error en el diccionario func tabla proy");
+            return null;
+        }
+
+        String nombreTabla = recibe.getNombreTabla();//obtengo el nombre de la tabla que se va a consultar
+        String[] ordenImpresion = recibe.getOrdenImpresion();//guardo en un arreglo el orden con el que se desea
+        //que se imprima la consulta ingresada por el usuario
+        Vector<Vector> datos = new Vector<>();
+        Vector<Vector> grande = recibe.getGrande();
+        HashMap<String,Integer> posicionesAtributos = recibe.getPosicionesAtributos();
+
+        int posicion = 0;//defino un entero que me va a ayudar a poder ubicarme en la posicion que necesito del
+        for(Vector fila:grande){//con este for voy a recorrer todos los vectores dentro de "grande"
+            Vector<String> dentro = new Vector<>();//defino un nuevo vector de cadenas, este me va a servir para almacenar
+            //los datos que quiero que se impriman
+            for(String columna:ordenImpresion){
+                posicion = posicionesAtributos.get(columna);
+                dentro.add(fila.get(posicion).toString());
+
+            }
+
+            datos.add(dentro);
+
+        }    
+
+        MostarEnTabla tabla = new MostarEnTabla(datos,ordenImpresion,nombreTabla);
+        return tabla;
 
     }
 
-    
     public static void main(String args[]){
         
-        LogicaSQL prueba = new LogicaSQL("SELECT \n employee_id, \n first_name,salary  ,manager_id  FROM tabla WHERE salary between 2500 AND 15000; ","hola.txt");
+        LogicaSQL prueba = new LogicaSQL("SELECT \n employee_id, \n first_name,salary  ,manager_id  FROM tabla WHERE salary between 2500 AND 15000; ");
         
         System.out.println("prueba = " + prueba.getConsulta());
         

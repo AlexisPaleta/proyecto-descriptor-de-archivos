@@ -1,19 +1,20 @@
-package pasosconsulta.versionesTablas.tablaOriginal;
+package pasosconsulta.versionesTablas.tablaProyectada.tablaOriginal;
 
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 
-public class TOriginalTemplate extends JPanel{
+public class TProyectadaTemplate extends JPanel{
 
-    private TOriginalComponent tOriginalComponent;
+    private TProyectadaComponent tProyectadaComponent;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable Tabla;
     private DefaultTableModel mt;
 
-    public TOriginalTemplate(TOriginalComponent tOriginalComponent) {
-        this.tOriginalComponent = tOriginalComponent;
+    public TProyectadaTemplate(TProyectadaComponent tProyectadaComponent) {
+        this.tProyectadaComponent = tProyectadaComponent;
 
         mt = new DefaultTableModel();
+        
 
         this.crearJTable();
         setSize(1000,300);
@@ -25,15 +26,11 @@ public class TOriginalTemplate extends JPanel{
     public void crearJTable(){
 
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        Tabla = new javax.swing.JTable();
+        this.jScrollPane1 = new javax.swing.JScrollPane();
+        this.Tabla = new javax.swing.JTable();
 
-        Tabla.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null}
+        this.Tabla.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {//tabla vacia
             },
             new String [] {
                 "Tabla de consultas"
@@ -41,13 +38,12 @@ public class TOriginalTemplate extends JPanel{
         ));
         
         
-        jScrollPane1.setViewportView(Tabla);
-        jScrollPane1.setBounds(0, 0, 1000, 300);
+        this.jScrollPane1.setViewportView(Tabla);
+        this.jScrollPane1.setBounds(0, 0, 1000, 300);
         this.add(jScrollPane1);
         
 
         //tabla = new JTable(mt);
-        Tabla.setBounds(0, 200, 1000, 300);
         
         
     }
@@ -57,11 +53,11 @@ public class TOriginalTemplate extends JPanel{
     }
 
     public javax.swing.JTable getTabla() {
-        return Tabla;
+        return this.Tabla;
     }
 
     public DefaultTableModel getMt() {
-        return mt;
+        return this.mt;
     }
 
 }

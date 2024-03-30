@@ -8,38 +8,28 @@ import javax.swing.JOptionPane;
 
 import ControlConsultas.LogicaSQL;
 import EstructurasDeDatosTemporales.MostarEnTabla;
-import EstructurasDeDatosTemporales.PasosTablasContenido;
 import pasosconsulta.pasosComponent;
+import pasosconsulta.versionesTablas.TablaEjecucion.TEjecutadaComponent;
 import pasosconsulta.versionesTablas.tablaOriginal.TOriginalComponent;
+import pasosconsulta.versionesTablas.tablaProyectada.tablaOriginal.TProyectadaComponent;
 
-public class ConsultasComponent implements ActionListener{//en esta clase se maneja la logica cuando se realizan
+public class ConsultasComponent {//en esta clase se maneja la logica cuando se realizan
     //las acciones de los botones, o sea las consultas que pueda ingresar el usuario
 
     private ConsultasTemplate consultasTemplate;
     private pasosComponent pasosCompon;
     private TOriginalComponent tOriginalComponent;
+    private TProyectadaComponent tProyectadaComponent;
+    private TEjecutadaComponent tEjecutadaComponent;
 
     public ConsultasComponent(){
         this.consultasTemplate = new ConsultasTemplate(this);
         this.pasosCompon = new pasosComponent(this);
 
 
-        consultasTemplate.getpOpciones().add(pasosCompon.getpasosTemplate());
+        consultasTemplate.getpDerecha().add(pasosCompon.getpasosTemplate());
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        
-
-        if(e.getSource() == consultasTemplate.getBEjecutar()){
-            ejecutar();
-        
-    }
-        if(e.getSource() == consultasTemplate.getBLimpiar()){
-            limpiar();
-        
-    }
-    }
 
     public void limpiar(){
 
@@ -61,55 +51,31 @@ public class ConsultasComponent implements ActionListener{//en esta clase se man
                 tOriginalComponent.mostrarTOriginal();
                 consultasTemplate.getpDebajo().add(tOriginalComponent.getTOriginalTemplate());
             break;
+            case "TProyectada"://en caso de que se presione el boton de Tabla proyectada se mostrara la tabla proyectada
+                if(tProyectadaComponent == null){
+                    tProyectadaComponent = new TProyectadaComponent(this);
+                }
+                tProyectadaComponent.mostrarTProyectada();
+                consultasTemplate.getpDebajo().add(tProyectadaComponent.getTProyectadaTemplate());
+            break;
+            case "Limpiar":
+                limpiar();
+            break;
+            case "Ejecutar":
+                if(tEjecutadaComponent == null){
+                    tEjecutadaComponent = new TEjecutadaComponent(this);
+                }
+                tEjecutadaComponent.mostrarTEjecutada();
+                consultasTemplate.getpDebajo().add(tEjecutadaComponent.getTEjecutadaTemplate());
+
         }
 
         consultasTemplate.repaint();
     }
 
-    public void ejecutar(){
-
-        try{
-
-            consultasTemplate.crearJTable();//se manda a llamar al metodo que crea la tabla para que se reinicie
-            consultasTemplate.getMt().setRowCount(0);//se reinicia el modelo de la tabla
-            //se manda a llamar a la clase logicaSQL para que ejecute la consulta que el usuario ingreso en 
-            //el textArea
-            var sLogicaSQL = new LogicaSQL(consultasTemplate.getTAreaConsulta().getText(),"tabla");
-            MostarEnTabla datosTabla = sLogicaSQL.ejecutarConsulta();//se manda a llamar a la clase que
-            //ayudara a tener organizados los datos que se obtuvieron de la consulta para poder mostrarlos
-
-        if(datosTabla == null){//en caso de que la clase LogicaSQL retorne nulo significa que hubo error a la hora 
-            //de tratar de realizar la consulta
-            JOptionPane.showMessageDialog(null, "Error al procesar la consulta");
-        }
-
-            Vector<Vector> datos = datosTabla.getDatos();//se crea un vector de vectores para poder mostrar 
-            //los datos, ya que la tabla reacciona de acuerdo a matrices, en caso de que se le pasen en este caso
-            //El vector de vectores actua como si dentro sus vectores pequeños fueran las filas de la tabla
-            //y cada elemento de esos vectores pequeños fueran las columnas de la tabla
-            String[] columnas = datosTabla.getColumnas();//para poder mostar los nombres de las columnas de la
-            //tabla se crea un vector de strings que contendra los nombres de las columnas, y se recuperan todos
-            //estos datos de la clase MostarEnTabla que se creo para poder tener organizados los datos que se
-            //obtuvieron de la consulta
-            
-            consultasTemplate.getMt().setColumnIdentifiers(columnas);
-
-            for(int i = 0; i < datos.size(); i++){
-                consultasTemplate.getMt().addRow(datos.get(i));
-            }
-            consultasTemplate.getTabla().setModel(consultasTemplate.getMt());
-
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(null, "Error al procesar la consulta");
-        }
-
-        
-
-    }
-
     public MostarEnTabla ejecutarConsulta(){//este metodo lo van a usar las clases que realizan las tablas
 
-        var sLogicaSQL = new LogicaSQL(consultasTemplate.getTAreaConsulta().getText(),"tabla");
+        var sLogicaSQL = new LogicaSQL(consultasTemplate.getTAreaConsulta().getText());
         MostarEnTabla datosTabla = sLogicaSQL.ejecutarConsulta();//se manda a llamar a la clase que
         
         if(datosTabla == null){//en caso de que la clase LogicaSQL retorne nulo significa que hubo error a la hora 
@@ -121,11 +87,23 @@ public class ConsultasComponent implements ActionListener{//en esta clase se man
         return datosTabla;
     }
 
-    public PasosTablasContenido toriginal(){//este metodo lo va a usar la clase TOriginalComponent
-        var sLogicaSQL = new LogicaSQL(consultasTemplate.getTAreaConsulta().getText(),"tabla");
+    public MostarEnTabla tOriginal(){//este metodo lo va a usar la clase TOriginalComponent
+        var sLogicaSQL = new LogicaSQL(consultasTemplate.getTAreaConsulta().getText());
 
         return sLogicaSQL.recuperarTablaOriginal();
 
+    }
+
+    public MostarEnTabla tProyectada(){//este metodo lo va a usar la clase TProyectadaComponent
+        var sLogicaSQL = new LogicaSQL(consultasTemplate.getTAreaConsulta().getText());
+
+        return sLogicaSQL.tablaProyectada();
+    }
+
+    public MostarEnTabla tEjecutada(){//este metodo lo va a usar la clase TEjecutadaComponent
+        var sLogicaSQL = new LogicaSQL(consultasTemplate.getTAreaConsulta().getText());
+
+        return sLogicaSQL.ejecutarConsulta();
     }
 
     public String getConsulta(){//este metodo lo van a usar las clases que realizan las tablas
