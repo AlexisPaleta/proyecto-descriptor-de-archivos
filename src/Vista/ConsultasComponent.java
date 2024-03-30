@@ -1,8 +1,5 @@
 package Vista;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Vector;
 
 import javax.swing.JOptionPane;
 

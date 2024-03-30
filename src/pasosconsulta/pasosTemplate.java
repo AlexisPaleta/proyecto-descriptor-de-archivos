@@ -15,7 +15,7 @@ public class pasosTemplate extends JPanel{
     private ObjGraficosService sObjGraficos;
     private RecursosService sRecursos;
 
-    private JButton bOriginal,bFinal,bWhere,bEjecutar,bLimpiar;
+    private JButton bOriginal,bWhere,bEjecutar,bLimpiar;
     private JLabel lAcciones;
 
     public pasosTemplate(pasosComponent pasosComponent) {

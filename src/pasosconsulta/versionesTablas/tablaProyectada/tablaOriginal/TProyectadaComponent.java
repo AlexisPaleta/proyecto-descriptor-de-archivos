@@ -1,15 +1,9 @@
 package pasosconsulta.versionesTablas.tablaProyectada.tablaOriginal;
 
-import java.io.IOException;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import EstructurasDeDatosTemporales.DescriptorArchivos;
 import EstructurasDeDatosTemporales.MostarEnTabla; 
-import EstructurasDeDatosTemporales.PasosTablasContenido;
 import Vista.ConsultasComponent;
-import Vista.VentanaTabla;
 
 public class TProyectadaComponent {
 

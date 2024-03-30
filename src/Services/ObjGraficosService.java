@@ -16,10 +16,6 @@ public class ObjGraficosService {
     private JLabel label;
     private JTextArea textArea;
     private JButton boton;
-    private Color color;
-    private Font font;
-    private Cursor cursor;
-    private Border borde;
 
     static private ObjGraficosService servicio;
 

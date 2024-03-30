@@ -4,12 +4,9 @@
  */
 package ControlConsultas;
 
-import EstructurasDeDatosTemporales.DescriptorArchivos;
 import EstructurasDeDatosTemporales.MostarEnTabla;
 import EstructurasDeDatosTemporales.ParametrosConsulta;
-import EstructurasDeDatosTemporales.PasosTablasContenido;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;
 

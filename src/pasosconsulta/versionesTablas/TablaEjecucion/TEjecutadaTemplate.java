@@ -1,7 +1,6 @@
 package pasosconsulta.versionesTablas.TablaEjecucion;
 
 import javax.swing.JPanel;
-import javax.swing.table.DefaultTableModel;
 
 public class TEjecutadaTemplate extends JPanel{
 

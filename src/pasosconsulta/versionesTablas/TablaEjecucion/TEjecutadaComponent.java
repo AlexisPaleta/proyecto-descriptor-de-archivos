@@ -4,7 +4,6 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
-import ControlConsultas.LogicaSQL;
 import EstructurasDeDatosTemporales.MostarEnTabla;
 import Vista.ConsultasComponent;
 

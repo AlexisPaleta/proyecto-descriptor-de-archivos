@@ -1,6 +1,5 @@
 package Vista;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,7 +20,7 @@ public class ConsultasTemplate extends JFrame{
     private RecursosService sRecursos;
 
     private JPanel pDebajo, pIzquierda,pDerecha,pOpciones;
-    private JLabel lTituloVentana,lAcciones;
+    private JLabel lTituloVentana;
     private JTextArea tAreaConsulta;
 
     private javax.swing.JScrollPane jScrollPane1;
